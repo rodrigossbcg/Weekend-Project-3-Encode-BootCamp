@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import * as readline from "readline";
 import { readFileSync } from 'fs';
 require("dotenv").config()
 
@@ -9,9 +8,12 @@ require("dotenv").config()
 
 const MINT_VALUE = ethers.parseEther("10");
 const RODRIGO_PRIVATE_KEY = process.env.RODRIGO_PRIVATE_KEY ?? "";
-const GONCALO_WALLET = process.env.GONCALO_WALLET ?? "";
-const RUI_WALLET = process.env.RUI_WALLET ?? "";
-const RODRIGO_WALLET = process.env.RODRIGO_WALLET ?? "";
+const GONCALO_PRIVATE_KEY = process.env.GONCALO_PRIVATE_KEY ?? "";
+const RUI_PRIVATE_KEY = process.env.RUI_PRIVATE_KEY ?? "";
+
+const GONCALO_ADDRESS = process.env.GONCALO_ADDRESS ?? "";
+const RUI_ADDRESS = process.env.RUI_ADDRESS ?? "";
+const RODRIGO_ADDRESS = process.env.RODRIGO_ADDRESS ?? "";
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +36,9 @@ async function main() {
     console.log(`Provider connected at block number ${lastBolck}\n`)
 
     // Connect Wallet to the network using a provider
-    const signer = new ethers.Wallet(RODRIGO_PRIVATE_KEY, provider);
+    const signer= new ethers.Wallet(RODRIGO_PRIVATE_KEY, provider);
+    const signer2 = new ethers.Wallet(GONCALO_PRIVATE_KEY, provider);
+    const signer3 = new ethers.Wallet(RUI_PRIVATE_KEY, provider);
     console.log(`Wallet with address ${signer.address} is connected\n`)
 
     // Get ABI and Bytecode to deply the contract
@@ -49,24 +53,35 @@ async function main() {
     const contractAddress = await contract.getAddress();
     console.log(`Contract deplyed at ${contractAddress} by signer ${signer.address}\n`);
 
-    // Mint Tokens
+    // Connect contract to signer
     const contractSigner = new ethers.Contract(contractAddress, abi, signer);
-    await contractSigner.mint(RODRIGO_WALLET, MINT_VALUE);
-    console.log("1ETH minted to Rodrigo")
-    await contractSigner.mint(GONCALO_WALLET, MINT_VALUE);
-    console.log("1ETH minted to Gonçalo")
-    await contractSigner.mint(RUI_WALLET, MINT_VALUE);
-    console.log("1ETH minted to Rui\n")
+
+    // Mint Tokens
+    const tx1 = await contractSigner.mint(RODRIGO_ADDRESS, MINT_VALUE);
+    await tx1.wait();
+    console.log("1ETH minted to Rodrigo\n")
+
+    // Balance of
+    const b1 = await contractSigner.balanceOf(RODRIGO_ADDRESS);
+    console.log(`Rodrigo Balance: ${b1}`)
+    const b2 = await contractSigner.balanceOf(GONCALO_ADDRESS);
+    console.log(`Gonçalo Balance: ${b2}`)
+    const b3 = await contractSigner.balanceOf(RUI_ADDRESS);
+    console.log(`Rui Balance: ${b3} \n`)
 
     // Delegate (to activate voting power)
-    await contractSigner.delegate(RODRIGO_WALLET);
+    const tx2 = await contractSigner.delegate(RODRIGO_ADDRESS);
+    await tx2.wait();
     console.log("Rodrigo delegated")
-    await contractSigner.delegate(GONCALO_WALLET);
-    console.log("Gonçalo delegated")
-    await contractSigner.delegate(RUI_WALLET);
-    console.log("Rui delegated\n")
 
-    return contract
+    // Voting Power
+    const v1 = await contractSigner.getVotes(RODRIGO_ADDRESS);
+    console.log(`Rodrigo current VP: ${v1}`)
+    const v2 = await contractSigner.getVotes(GONCALO_ADDRESS);
+    console.log(`Gonçalo current VP: ${v2}`)
+    const v3 = await contractSigner.getVotes(RUI_ADDRESS);
+    console.log(`Rui current VP: ${v3} \n`)
+
 }
 
 

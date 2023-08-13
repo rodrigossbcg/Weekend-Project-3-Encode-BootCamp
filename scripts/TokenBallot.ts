@@ -76,25 +76,27 @@ async function TokenBallot() {
 
     // Gonçalo Delegate Voting Power to Rodrigo
     votingPower = await ballotContract.votingPower(GONCALO_ADDRESS);
-    console.log(`Gonçalo voting Power is ${votingPower}`);
+    console.log(`Gonçalo voting Power is ${votingPower}\n`);
     ballotContract.connect(gon_wallet)
-    await ballotContract.delegateVotingPower(RODRIGO_ADDRESS, votingPower);
+    const tx1 = await ballotContract.delegateVotingPower(RODRIGO_ADDRESS, votingPower);
+    await tx1.wait();
     await ballotContract.vote(1, votingPower);
 
     // Rodrigo Votes on Proposal 1
     ballotContract.connect(rod_wallet)
     votingPower = await ballotContract.votingPower(RODRIGO_ADDRESS);
-    console.log(`Rodrigo new voting Power is ${votingPower}`);
-    await ballotContract.vote(0, votingPower);
-    console.log("Rodrigo voted on 1");
+    console.log(`Rodrigo new voting Power is ${votingPower}\n`);
+    const tx2 = await ballotContract.vote(0, votingPower);
+    await tx2.wait()
+    console.log("Rodrigo voted on 1\n");
 
     // Rui Votes on Proposal 2
     ballotContract.connect(rui_wallet)
     votingPower = await ballotContract.votingPower(RUI_ADDRESS);
-    console.log(`Rui voting Power is ${votingPower}`);
-    await ballotContract.vote(1, votingPower);
-    console.log("Rui voted on 2");
-
+    console.log(`Rui voting Power is ${votingPower}\n`);
+    const tx3 = await ballotContract.vote(1, votingPower);
+    await tx3.wait()
+    console.log("Rui voted on 2\n");
 
     // Declare winner
     await ballotContract.winningProposal();
@@ -115,5 +117,5 @@ async function main() {
 
 main().catch((error) => {
     console.log(error);
-    process.exitCode = 1;
+    process.exitCode=1;
 })
