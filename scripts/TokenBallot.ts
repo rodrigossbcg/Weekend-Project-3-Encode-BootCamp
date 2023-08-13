@@ -49,24 +49,57 @@ async function getWallets() {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 async function TokenBallot() {
 
     // Get Wallets
     const {rod_wallet, rui_wallet, gon_wallet} = await getWallets();
-
-    // Get Provider
-    const provider = setupProvider();
-    const lastBolck = await provider.getBlockNumber();
-    console.log(`Provider connected at block number ${lastBolck}\n`)
-
+    
     // Get ABI
     const jsonData = JSON.parse(readFileSync("artifacts/contracts/TokenizedBallot.sol/Ballot.json", 'utf8'));
     const abi = jsonData["abi"];
 
     // Get the contract factory and connect to it
     const ballotContract = new ethers.Contract(BALLOT_TOKEN, abi, rod_wallet);
-    const tx1 = await ballotContract.delegateVotingPower();
-    console.log(tx1)
+    let votingPower = await ballotContract.votingPower(RODRIGO_ADDRESS);
+    console.log(`Rodrigo voting Power is ${votingPower}`);
+
+    // Show Proposals avaliable to be voted 
+    for (let i = 0; 10; i++) {
+        try {
+          const proposal = await ballotContract.proposals(i);
+          const name = ethers.decodeBytes32String(proposal.name);
+          console.log(`Proporsal ${i}: ${name}`);
+        }
+        catch {break};
+    };
+
+    // Gonçalo Delegate Voting Power to Rodrigo
+    votingPower = await ballotContract.votingPower(GONCALO_ADDRESS);
+    console.log(`Gonçalo voting Power is ${votingPower}`);
+    ballotContract.connect(gon_wallet)
+    await ballotContract.delegateVotingPower(RODRIGO_ADDRESS, votingPower);
+    await ballotContract.vote(1, votingPower);
+
+    // Rodrigo Votes on Proposal 1
+    ballotContract.connect(rod_wallet)
+    votingPower = await ballotContract.votingPower(RODRIGO_ADDRESS);
+    console.log(`Rodrigo new voting Power is ${votingPower}`);
+    await ballotContract.vote(0, votingPower);
+    console.log("Rodrigo voted on 1");
+
+    // Rui Votes on Proposal 2
+    ballotContract.connect(rui_wallet)
+    votingPower = await ballotContract.votingPower(RUI_ADDRESS);
+    console.log(`Rui voting Power is ${votingPower}`);
+    await ballotContract.vote(1, votingPower);
+    console.log("Rui voted on 2");
+
+
+    // Declare winner
+    await ballotContract.winningProposal();
+    const winnerProposal  = await ballotContract.winnerName();
+    console.log(`Winner Proposal was ${winnerProposal}`);
 
     return ballotContract
 }
@@ -82,5 +115,5 @@ async function main() {
 
 main().catch((error) => {
     console.log(error);
-    process.exitCode = 1;
+    process.exitCode = 1;
 })
