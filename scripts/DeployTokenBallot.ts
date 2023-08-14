@@ -54,7 +54,6 @@ async function main() {
     const contractAddress = await contract.getAddress();
     console.log(`Contract deplyed at ${contractAddress} by signer ${signer.address}\n`)
 
-    return contract
 }
 
 
