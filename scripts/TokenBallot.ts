@@ -64,6 +64,10 @@ async function TokenBallot() {
   
     let votingPower = await contract.votingPower(RODRIGO_ADDRESS);
     console.log(`Rodrigo voting Power is ${votingPower}\n`);
+    let votingPower2 = await contract.votingPower(GONCALO_ADDRESS);
+    console.log(`Gonçalo voting Power is ${votingPower}\n`);
+    let votingPower3 = await contract.votingPower(RUI_ADDRESS);
+    console.log(`Rui voting Power is ${votingPower}\n`);
 
     // Show Proposals avaliable to be voted 
     for (let i = 0; 10; i++) {
@@ -77,25 +81,25 @@ async function TokenBallot() {
     console.log("\n")
 
     // Gonçalo Delegate Voting Power to Rodrigo
-    votingPower = await contract.votingPower(GONCALO_ADDRESS);
-    console.log(`Gonçalo voting Power is ${votingPower}\n`);
-    contract = await contract.connect(gon_wallet)
-    const tx1 = await contract.delegateVotingPower(RODRIGO_ADDRESS, votingPower);
+    votingPower2 = await contract.votingPower(GONCALO_ADDRESS);
+    console.log(`Gonçalo voting Power is ${votingPower2}\n`);
+    const tx = await contract.connect(gon_wallet)
+    const tx1 = await contract.delegateVotingPower(RODRIGO_ADDRESS, votingPower2);
     await tx1.wait();
     console.log("Gonçalo delegated\n")
 
     // Rodrigo Votes on Proposal 1
     contract = contract.connect(rod_wallet)
     votingPower = await contract.votingPower(RODRIGO_ADDRESS);
-    console.log(`Rodrigo new voting Power is ${votingPower - 1n}\n`);
+    console.log(`Rodrigo new voting Power is ${votingPower}\n`);
     const tx2 = await contract.vote(0, votingPower);
     await tx2.wait()
     console.log("Rodrigo voted on 1\n");
 
     // Rui Votes on Proposal 2
     contract = contract.connect(rui_wallet)
-    votingPower = await contract.votingPower(RUI_ADDRESS);
-    console.log(`Rui voting Power is ${votingPower}\n`);
+    votingPower3 = await contract.votingPower(RUI_ADDRESS);
+    console.log(`Rui voting Power is ${votingPower3}\n`);
     const tx3 = await contract.vote(1, votingPower);
     await tx3.wait()
     console.log("Rui voted on 2\n");
