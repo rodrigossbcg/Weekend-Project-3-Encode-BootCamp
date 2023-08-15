@@ -79,7 +79,7 @@ async function TokenBallot() {
     // Gonçalo Delegate Voting Power to Rodrigo
     votingPower = await contract.votingPower(GONCALO_ADDRESS);
     console.log(`Gonçalo voting Power is ${votingPower}\n`);
-    contract = contract.connect(gon_wallet)
+    contract = await contract.connect(gon_wallet)
     const tx1 = await contract.delegateVotingPower(RODRIGO_ADDRESS, votingPower);
     await tx1.wait();
     console.log("Gonçalo delegated\n")
