@@ -61,6 +61,8 @@ async function TokenBallot() {
 
     // Get the contract factory and connect to it
     let contract = Ballot__factory.connect(BALLOT_TOKEN, rod_wallet);
+    let contract2 = Ballot__factory.connect(BALLOT_TOKEN, gon_wallet);
+    let contract3 = Ballot__factory.connect(BALLOT_TOKEN, rui_wallet);
   
     let votingPower = await contract.votingPower(RODRIGO_ADDRESS);
     console.log(`Rodrigo voting Power is ${votingPower}\n`);
@@ -81,26 +83,25 @@ async function TokenBallot() {
     console.log("\n")
 
     // Gonçalo Delegate Voting Power to Rodrigo
-    votingPower2 = await contract.votingPower(GONCALO_ADDRESS);
+    votingPower2 = await contract2.votingPower(GONCALO_ADDRESS);
     console.log(`Gonçalo voting Power is ${votingPower2}\n`);
-    const tx = await contract.connect(gon_wallet)
-    const tx1 = await contract.delegateVotingPower(RODRIGO_ADDRESS, votingPower2);
-    await tx1.wait();
+    const tx = await contract2.delegate(RODRIGO_ADDRESS);
+    await tx.wait();
     console.log("Gonçalo delegated\n")
 
     // Rodrigo Votes on Proposal 1
-    contract = contract.connect(rod_wallet)
-    votingPower = await contract.votingPower(RODRIGO_ADDRESS);
+    
+    votingPower = await contract2.votingPower(RODRIGO_ADDRESS);
     console.log(`Rodrigo new voting Power is ${votingPower}\n`);
     const tx2 = await contract.vote(0, votingPower);
     await tx2.wait()
     console.log("Rodrigo voted on 1\n");
 
     // Rui Votes on Proposal 2
-    contract = contract.connect(rui_wallet)
-    votingPower3 = await contract.votingPower(RUI_ADDRESS);
+    
+    votingPower3 = await contract3.votingPower(RUI_ADDRESS);
     console.log(`Rui voting Power is ${votingPower3}\n`);
-    const tx3 = await contract.vote(1, votingPower);
+    const tx3 = await contract3.vote(1, votingPower);
     await tx3.wait()
     console.log("Rui voted on 2\n");
 
