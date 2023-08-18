@@ -1,4 +1,5 @@
-PS C:\Users\ruisi\Desktop\Nova pasta\Weekend-Project-3-Encode-BootCamp> npx ts-node ./scripts/DeployERC20Votes.ts
+Deploy MyERC20Votes.sol: npx ts-node ./scripts/DeployERC20Votes.ts
+```
 Provider connected at block number 4110511
 
 Wallet with address 0x663915f6D6fF2D11ECfC16162143C0EcE2A2279C is connected
@@ -22,15 +23,20 @@ Rui delegated
 Rodrigo current VP: 1000000000000000000
 Gonçalo current VP: 1000000000000000000
 Rui current VP: 2000000000000000000
+```
 
-PS C:\Users\ruisi\Desktop\Nova pasta\Weekend-Project-3-Encode-BootCamp> npx ts-node ./scripts/DeployTokenBallot.ts Jesus notJesus
+Deploy TokenizedBallot.sol: npx ts-node ./scripts/DeployTokenBallot.ts Jesus notJesus
+
+```
 Provider connected at block number 4110521
 
 Wallet with address 0x663915f6D6fF2D11ECfC16162143C0EcE2A2279C is connected
 
 Contract deplyed at 0x1403Dfb1B3f73374dcC517652C12Be40E4e57588 by signer 0x663915f6D6fF2D11ECfC16162143C0EcE2A2279C
+```
 
-PS C:\Users\ruisi\Desktop\Nova pasta\Weekend-Project-3-Encode-BootCamp> npx ts-node ./scripts/TokenBallot.ts
+Interact with deployed Ballot: npx ts-node ./scripts/TokenBallot.ts
+```
 Provider connected at block number 4110522
 
 Rodrigo voting Power is 1000000000000000000
@@ -53,3 +59,4 @@ Rui voting Power is 2000000000000000000
 Rui voted on 2
 
 Winner Proposal was 0x4a65737573000000000000000000000000000000000000000000000000000000
+```
